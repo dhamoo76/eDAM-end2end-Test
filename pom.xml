@@ -7,7 +7,6 @@
     <version>1.0</version>
     <packaging>jar</packaging>
     <name>edam_end2end_automation</name>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <cucumber.version>4.7.0</cucumber.version>
@@ -19,22 +18,23 @@
         <selenium.version>3.141.59</selenium.version>
         <testng.version>6.14.3</testng.version>
         <resources.version>2.4</resources.version>
-        <surefire.version>3.0.0-M5</surefire.version>
         <compiler.version>3.1</compiler.version>
         <failsafe.version>3.0.0-M3</failsafe.version>
         <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
         <checkstyle.version>6.18</checkstyle.version>
-        <sonar.exclusions> *./features </sonar.exclusions>
+        <buildtools.version>7.0.3</buildtools.version>
+        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
+        <slf4j.version>1.7.32</slf4j.version>
+        <awaitility.version>4.1.1</awaitility.version>
+        <lombok.version>1.18.22</lombok.version>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
             <version>${webDriver.version}</version>
-
+            <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
@@ -45,12 +45,16 @@
             <artifactId>poi</artifactId>
             <version>${poi.version}</version>
         </dependency>
-
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
             <version>${cucumber.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <artifactId>cucumber-junit</artifactId>
+            <groupId>io.cucumber</groupId>
+            <version>${cucumber.version}</version>
         </dependency>
         <dependency>
             <groupId>io.cucumber</groupId>
@@ -81,10 +85,20 @@
             <version>${selenium.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${testng.version}</version>
-            <scope>compile</scope>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>
@@ -103,7 +117,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <configLocation>com/wsgc/buildtools/wsgc_checkstyle_rules_7.2_aggressive.xml</configLocation>
+                    <configLocation>com/wsgc/buildtools/wsgc_checkstyle_rules_7.2_aggressive.xml
+                    </configLocation>
                     <sourceDirectory>${project.build.sourceDirectory}/../..</sourceDirectory>
                     <sourceDirectories>
                         <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
@@ -114,6 +129,7 @@
                     <maxAllowedViolations>0</maxAllowedViolations>
                     <failOnViolation>true</failOnViolation>
                     <failsOnError>true</failsOnError>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -121,7 +137,11 @@
                         <artifactId>checkstyle</artifactId>
                         <version>${checkstyle.version}</version>
                     </dependency>
-
+                    <dependency>
+                        <groupId>com.wsgc.ecommerce</groupId>
+                        <artifactId>wsgc-ecommerce-build-tools</artifactId>
+                        <version>${buildtools.version}</version>
+                    </dependency>
                 </dependencies>
             </plugin>
             <plugin>
@@ -132,12 +152,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire.version}</version>
-                <configuration>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>testng.xml</suiteXmlFile>
-                    </suiteXmlFiles>
-                </configuration>
+                <version>${maven-surefire-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -158,6 +173,7 @@
                     <execution>
                         <goals>
                             <goal>integration-test</goal>
+                            <goal>verify</goal>
                         </goals>
                         <configuration>
                             <includes>
@@ -172,6 +188,20 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <!-- Building an executable jar -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!-- give full qualified name of your main class-->
+                            <mainClass>com.EdamAutomation</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
         </plugins>
     </build>

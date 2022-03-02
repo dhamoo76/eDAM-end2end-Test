@@ -1,6 +1,11 @@
-target/
+.checkstyle
+.classpath
 .project
-/.idea/
-./*.log
-/.settings/
-
+.settings
+.idea
+*.iml
+*.log
+*.redo
+*.data
+/log4j.properties
+target/
